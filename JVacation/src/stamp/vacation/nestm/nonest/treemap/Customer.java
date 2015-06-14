@@ -1,6 +1,7 @@
 package stamp.vacation.nestm.nonest.treemap;
 
-import stanford.AbortException;
+import jvstm.TransactionSignaller;
+
 
 /* =============================================================================
  *
@@ -134,7 +135,7 @@ public class Customer {
 
 	boolean status = reservationInfoList.remove(reservationInfo);
 	if (!status) {
-	    throw new AbortException();
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 	return true;
     }

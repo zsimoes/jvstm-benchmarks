@@ -1,6 +1,6 @@
 package stamp.vacation.jvstm;
 
-import jvstm.CommitException;
+import jvstm.TransactionSignaller;
 
 /* =============================================================================
  *
@@ -73,85 +73,94 @@ import jvstm.CommitException;
  * =============================================================================
  */
 
-public class Customer {
+public class Customer
+{
 
-    /*
-     * ==========================================================================
-     * === compareReservationInfo
-     * ================================================
-     * =============================
-     */
-    final int id;
-    final List_t<Reservation_Info> reservationInfoList;
+	/*
+	 * ==========================================================================
+	 * === compareReservationInfo
+	 * ================================================
+	 * =============================
+	 */
+	final int id;
+	final List_t<Reservation_Info> reservationInfoList;
 
-    /*
-     * ==========================================================================
-     * === customer_alloc
-     * ========================================================
-     * =====================
-     */
-    public Customer(int id) {
-	this.id = id;
-	reservationInfoList = new List_t<Reservation_Info>();
-    }
-
-    /*
-     * ==========================================================================
-     * === customer_compare -- Returns -1 if A < B, 0 if A = B, 1 if A > B
-     * ======
-     * =======================================================================
-     */
-    int customer_compare(Customer aPtr, Customer bPtr) {
-	return (aPtr.id - bPtr.id);
-    }
-
-    /*
-     * ==========================================================================
-     * === customer_addReservationInfo -- Returns true if success, else FALSE
-     * ====
-     * =========================================================================
-     */
-    boolean customer_addReservationInfo(int type, int id, int price) {
-	Reservation_Info reservationInfo = new Reservation_Info(type, id, price);
-
-	reservationInfoList.add(reservationInfo);
-	return true;
-    }
-
-    /*
-     * ==========================================================================
-     * === customer_removeReservationInfo -- Returns true if success, else FALSE
-     * ==
-     * ========================================================================
-     * ===
-     */
-    boolean customer_removeReservationInfo(int type, int id) {
-	Reservation_Info reservationInfo = reservationInfoList.find(type, id);
-
-	if (reservationInfo == null) {
-	    return false;
+	/*
+	 * ==========================================================================
+	 * === customer_alloc
+	 * ========================================================
+	 * =====================
+	 */
+	public Customer(int id)
+	{
+		this.id = id;
+		reservationInfoList = new List_t<Reservation_Info>();
 	}
 
-	boolean status = reservationInfoList.remove(reservationInfo);
-	if (!status) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - removeResInfo " + Thread.currentThread().getId());
-	    throw new CommitException();
-	}
-	return true;
-    }
-
-    /*
-     * ==========================================================================
-     * === customer_getBill -- Returns total cost of reservations
-     * ================
-     * =============================================================
-     */
-    int customer_getBill() {
-	int bill = 0;
-	for (Reservation_Info it : reservationInfoList) {
-	    bill += it.price;
+	/*
+	 * ==========================================================================
+	 * === customer_compare -- Returns -1 if A < B, 0 if A = B, 1 if A > B
+	 * ======
+	 * =======================================================================
+	 */
+	int customer_compare(Customer aPtr, Customer bPtr)
+	{
+		return (aPtr.id - bPtr.id);
 	}
 
-	return bill;
-    }
+	/*
+	 * ==========================================================================
+	 * === customer_addReservationInfo -- Returns true if success, else FALSE
+	 * ====
+	 * =========================================================================
+	 */
+	boolean customer_addReservationInfo(int type, int id, int price)
+	{
+		Reservation_Info reservationInfo = new Reservation_Info(type, id, price);
+
+		reservationInfoList.add(reservationInfo);
+		return true;
+	}
+
+	/*
+	 * ==========================================================================
+	 * === customer_removeReservationInfo -- Returns true if success, else FALSE
+	 * ==
+	 * ========================================================================
+	 * ===
+	 */
+	boolean customer_removeReservationInfo(int type, int id)
+	{
+		Reservation_Info reservationInfo = reservationInfoList.find(type, id);
+
+		if (reservationInfo == null)
+		{
+			return false;
+		}
+
+		boolean status = reservationInfoList.remove(reservationInfo);
+		if (!status)
+		{
+			System.err.println("COMMIT EXCEPTION - removeResInfo " + Thread.currentThread().getId());
+			TransactionSignaller.SIGNALLER.signalCommitFail();
+		}
+		return true;
+	}
+
+	/*
+	 * ==========================================================================
+	 * === customer_getBill -- Returns total cost of reservations
+	 * ================
+	 * =============================================================
+	 */
+	int customer_getBill()
+	{
+		int bill = 0;
+		for (Reservation_Info it : reservationInfoList)
+		{
+			bill += it.price;
+		}
+
+		return bill;
+	}
 }

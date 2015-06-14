@@ -15,6 +15,7 @@ public class DeleteCustomerOperation extends Operation {
     
     @Override
     public void doOperation() {
+    	//System.out.println("\t\tDeleteCustomer - running TX");
 	while (true) {
 	    Transaction tx = Transaction.begin();
 	    // Debug.print("[Delete] Started top level tx in thread " +

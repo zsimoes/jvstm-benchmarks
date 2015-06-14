@@ -7,9 +7,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import epfl.ConflictException;
-import epfl.NestedWorker;
-import epfl.Transaction;
+import jvstm.CommitException;
+import jvstm.ParallelTask;
+import jvstm.Transaction;
+import jvstm.TransactionSignaller;
 
 public class MakeReservationOperation extends Operation {
 
@@ -57,7 +58,7 @@ public class MakeReservationOperation extends Operation {
 	    threadPool = Executors.newFixedThreadPool(Operation.numberParallelSiblings);
 	    Transaction tx = Transaction.begin();
 	    if (tx == null) {
-		throw new ConflictException(); // Should never happen!
+		TransactionSignaller.SIGNALLER.signalCommitFail(); // Should never happen!
 	    }
 	    try {
 		if (Operation.nestedParallelismOn) {
@@ -65,16 +66,16 @@ public class MakeReservationOperation extends Operation {
 		} else {
 		    makeReservationNotNested();
 		}
-		tx.commitTx();
-		assert (stanford.Debug.print(3, Thread.currentThread().getId() + "] Finished operation: " + this));
+		tx.commit();
+		
 		return;
-	    } catch (ConflictException ae) {
+	    } catch (CommitException ae) {
 
 	    }
 	}
     }
 
-    private class NestedWork extends NestedWorker<Boolean> {
+    private class NestedWork extends ParallelTask<Boolean> {
 
 	private final int min;
 	private final int max;

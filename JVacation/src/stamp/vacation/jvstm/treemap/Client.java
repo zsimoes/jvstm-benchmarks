@@ -1,7 +1,5 @@
 package stamp.vacation.jvstm.treemap;
 
-import jvstm.CommitException;
-import jvstm.Transaction;
 
 public class Client extends Thread {
     final int id;

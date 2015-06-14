@@ -1,7 +1,8 @@
 package stamp.vacation.pnstm.treemap.copy;
 
-import epfl.ConflictException;
-import epfl.Transaction;
+import jvstm.CommitException;
+import jvstm.Transaction;
+import jvstm.TransactionSignaller;
 
 public class DeleteCustomerOperation extends Operation {
 
@@ -18,17 +19,17 @@ public class DeleteCustomerOperation extends Operation {
 	while (true) {
 	    Transaction tx = Transaction.begin();
 	    if (tx == null) {
-		throw new ConflictException(); // Should never happen!
+		TransactionSignaller.SIGNALLER.signalCommitFail(); // Should never happen!
 	    }
 	    try {
 		int bill = managerPtr.manager_queryCustomerBill(customerId);
 		if (bill >= 0) {
 		    managerPtr.manager_deleteCustomer(customerId);
 		}
-		tx.commitTx();
-		assert (stanford.Debug.print(3, Thread.currentThread().getId() + "] Finished operation: " + this));
+		tx.commit();
+		
 		return;
-	    } catch (ConflictException ae) {
+	    } catch (CommitException ae) {
 
 	    }
 	}

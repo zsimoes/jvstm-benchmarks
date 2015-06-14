@@ -2,13 +2,11 @@ package stamp.vacation.jvstm;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import jvstm.CommitException;
+import jvstm.ParallelTask;
 import jvstm.Transaction;
-import jvstm.util.NestedWorkUnit;
+import jvstm.TransactionalTask;
 import stamp.vacation.jvstm.treemap.Definitions;
 
 public class UpdateTablesOperation extends Operation {
@@ -74,7 +72,7 @@ public class UpdateTablesOperation extends Operation {
 	}
     }
 
-    private class NestedWorker extends NestedWorkUnit<Void> {
+    private class NestedWorker extends ParallelTask<Void> {
 
 	private List<Integer> operations;
 
@@ -83,7 +81,7 @@ public class UpdateTablesOperation extends Operation {
 	}
 
 	@Override
-	public Void execute() throws Throwable {
+	public Void execute() {
 	    for (int n : operations) {
 		int t = types[n];
 		int id = ids[n];
@@ -119,7 +117,7 @@ public class UpdateTablesOperation extends Operation {
     private void updateTables() {
 	int n;
 	
-	List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
+	List<TransactionalTask<Void>> workers = new ArrayList<TransactionalTask<Void>>();
 	List<Integer> type1 = new ArrayList<Integer>();
 	List<Integer> type2 = new ArrayList<Integer>();
 	List<Integer> type3 = new ArrayList<Integer>();
@@ -133,6 +131,8 @@ public class UpdateTablesOperation extends Operation {
 		type3.add(n);
 	    }
 	}
+	
+	//System.out.println("\t\tUpdateTables - running workers: " + "3");
 	
 	workers.add(new NestedWorker(type1));
 	workers.add(new NestedWorker(type2));

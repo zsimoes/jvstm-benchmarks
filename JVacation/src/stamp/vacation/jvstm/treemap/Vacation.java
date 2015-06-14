@@ -1,6 +1,5 @@
 package stamp.vacation.jvstm.treemap;
 
-import jvstm.NestedTransaction;
 
 public class Vacation {
 
@@ -244,7 +243,7 @@ public class Vacation {
 
 	// System.out.print("done.");
 	long diff = stop - start;
-	System.out.println(diff + "\n" + jvstm.Transaction.getReport());
+	System.out.println(diff + "\n" );
 	vac.checkTables(manager);
 
 	/* Clean up */

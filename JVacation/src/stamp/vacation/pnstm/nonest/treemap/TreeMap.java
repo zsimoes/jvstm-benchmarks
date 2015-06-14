@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
 
-import epfl.Box;
+import jvstm.VBox;
 
 /**
  * This class provides a red-black tree implementation of the SortedMap
@@ -97,7 +97,7 @@ import epfl.Box;
  * @since 1.2
  * @status updated to 1.6
  * @author Luis Gabriel Ganchinho de Pina (modified original code to use JVSTM
- *         boxes)
+ *         VBoxes)
  */
 public class TreeMap<K extends Comparable<? super K>, V> implements Iterable<V> {
     // Implementation note:
@@ -126,7 +126,7 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Iterable<V> 
     /**
      * The root node of this TreeMap.
      */
-    private final Box<Node> root = new Box<Node>(nil);
+    private final VBox<Node> root = new VBox<Node>(nil);
 
     /**
      * Class to represent an entry in the tree. Holds a single key-value pair,
@@ -138,17 +138,17 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Iterable<V> 
 
 	// All fields package visible for use by nested classes.
 	/** The color of this node. */
-	final Box<Color> color;
+	final VBox<Color> color;
 
 	/** The left child node. */
-	final Box<Node> left = new Box<Node>(nil);
+	final VBox<Node> left = new VBox<Node>(nil);
 	/** The right child node. */
-	final Box<Node> right = new Box<Node>(nil);
+	final VBox<Node> right = new VBox<Node>(nil);
 	/** The parent node. */
-	final Box<Node> parent = new Box<Node>(nil);
+	final VBox<Node> parent = new VBox<Node>(nil);
 
-	final Box<K> key;
-	final Box<V> value;
+	final VBox<K> key;
+	final VBox<V> value;
 
 	/**
 	 * Simple constructor.
@@ -159,9 +159,9 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Iterable<V> 
 	 *            the value
 	 */
 	Node(K key, V value, Color color) {
-	    this.key = new Box<K>(key);
-	    this.value = new Box<V>(value);
-	    this.color = new Box<Color>(color);
+	    this.key = new VBox<K>(key);
+	    this.value = new VBox<V>(value);
+	    this.color = new VBox<Color>(color);
 	}
     }
 

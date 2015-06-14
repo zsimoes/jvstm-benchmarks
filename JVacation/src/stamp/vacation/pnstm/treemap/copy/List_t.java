@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import stanford.Box;
-import stanford.Cons;
+import jvstm.VBox;
+import jvstm.util.Cons;
 
 public class List_t<E> implements Iterable<E> {
 
     @SuppressWarnings("unchecked")
-    protected final Box<Cons<E>> elements = new Box<Cons<E>>((Cons<E>) Cons.empty());
+    protected final VBox<Cons<E>> elements = new VBox<Cons<E>>((Cons<E>) Cons.empty());
 
     public List_t() {
     }

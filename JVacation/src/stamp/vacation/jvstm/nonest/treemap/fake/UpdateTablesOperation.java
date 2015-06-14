@@ -2,11 +2,11 @@ package stamp.vacation.jvstm.nonest.treemap.fake;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import jvstm.CommitException;
+import jvstm.ParallelTask;
 import jvstm.Transaction;
-import jvstm.util.NestedWorkUnit;
+import jvstm.TransactionalTask;
 
 public class UpdateTablesOperation extends Operation {
 
@@ -49,7 +49,7 @@ public class UpdateTablesOperation extends Operation {
 	    // Thread.currentThread().getId() + " " + tx);
 	    try {
 		if (Operation.fakeDepth > 0) {
-		    List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		    List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		    callables.add(new Nested(1));
 		    tx.manageNestedParallelTxs(callables, Operation.nestedParPool).get(0);
 		} else {
@@ -104,7 +104,7 @@ public class UpdateTablesOperation extends Operation {
 	}
     }
     
-    public class Nested extends NestedWorkUnit<Void> {
+    public class Nested extends ParallelTask<Void> {
 
 	protected int depth;
 	
@@ -113,12 +113,12 @@ public class UpdateTablesOperation extends Operation {
 	}
 	
 	@Override
-	public Void execute() throws Throwable {
+	public Void execute()  {
 	    if (depth == Operation.fakeDepth) {
 		operation();
 		return null;
 	    } else {
-		List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		callables.add(new Nested(depth + 1));
 		Transaction.current().manageNestedParallelTxs(callables, Operation.nestedParPool).get(0);
 		return null;

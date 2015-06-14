@@ -1,6 +1,7 @@
 package stamp.vacation.jvstm.nonest;
 
 import jvstm.CommitException;
+import jvstm.TransactionSignaller;
 
 /* =============================================================================
  *
@@ -134,8 +135,8 @@ public class Customer {
 
 	boolean status = reservationInfoList.remove(reservationInfo);
 	if (!status) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - removeResInfo " + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - removeResInfo " + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 	return true;
     }

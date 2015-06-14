@@ -1,7 +1,6 @@
 package stamp.vacation.nestm.nonest.treemap;
 
-import stanford.AbortException;
-
+import jvstm.TransactionSignaller;
 /* =============================================================================
  *
  * manager.c
@@ -106,10 +105,10 @@ public class Manager {
 	    if (!reservation.reservation_addToTotal(num)) {
 		return false;
 	    }
-	    if (reservation.numTotal.get() == 0) {
+	    if (reservation. numTotal.get() == 0) {
 		boolean status = table.remove(id) != null ? true : false;
 		if (!status) {
-		    throw new AbortException();
+		    TransactionSignaller.SIGNALLER.signalCommitFail();
 		}
 	    } else {
 		reservation.reservation_updatePrice(price);
@@ -222,7 +221,7 @@ public class Manager {
 	if (oldCustomer == null) {
 	    customerTable.put(customerId, customer);
 	} else {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	return true;
@@ -257,17 +256,17 @@ public class Manager {
 	for (Reservation_Info reservationInfo : reservationInfoList) {
 	    Reservation reservation = reservationTables[reservationInfo.type].get(reservationInfo.id);
 	    if (reservation == null) {
-		throw new AbortException();
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	    status = reservation.reservation_cancel();
 	    if (!status) {
-		throw new AbortException();
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	}
 
 	status = customerTable.remove(customerId) != null ? true : false;
 	if (!status) {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	return true;
@@ -437,7 +436,7 @@ public class Manager {
 	    /* Undo previous successful reservation */
 	    boolean status = reservation.reservation_cancel();
 	    if (!status) {
-		throw new AbortException();
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	    return false;
 	}
@@ -508,7 +507,7 @@ public class Manager {
 	    /* Undo previous successful cancellation */
 	    boolean status = reservation.reservation_make();
 	    if (!status) {
-		throw new AbortException();
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	    return false;
 	}

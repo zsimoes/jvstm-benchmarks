@@ -1,7 +1,8 @@
 package stamp.vacation.nestm.nonest.treemap;
 
-import stanford.AbortException;
-import stanford.Transaction;
+import jvstm.CommitException;
+import jvstm.Transaction;
+import jvstm.TransactionSignaller;
 
 public class MakeReservationOperation extends Operation {
 
@@ -46,14 +47,13 @@ public class MakeReservationOperation extends Operation {
 	while (true) {
 	    Transaction tx = Transaction.begin();
 	    if (tx == null) {
-		throw new AbortException(); // Should never happen!
+		TransactionSignaller.SIGNALLER.signalCommitFail(); // Should never happen!
 	    }
 	    try {
 		makeReservationNotNested();
-		tx.commitTx();
-		assert (stanford.Debug.print(3, Thread.currentThread().getId() + "] Finished operation: " + this));
+		tx.commit();
 		return;
-	    } catch (AbortException ae) {
+	    } catch (CommitException ae) {
 
 	    }
 	}

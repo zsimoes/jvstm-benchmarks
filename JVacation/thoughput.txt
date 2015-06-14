@@ -1,0 +1,2 @@
+Throughput Log - Measurement Interval: 100
+40964.0

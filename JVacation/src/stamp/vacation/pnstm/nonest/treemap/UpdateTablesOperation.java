@@ -1,7 +1,8 @@
 package stamp.vacation.pnstm.nonest.treemap;
 
-import epfl.ConflictException;
-import epfl.Transaction;
+import jvstm.CommitException;
+import jvstm.Transaction;
+import jvstm.TransactionSignaller;
 
 public class UpdateTablesOperation extends Operation {
 
@@ -41,14 +42,13 @@ public class UpdateTablesOperation extends Operation {
 	while (true) {
 	    Transaction tx = Transaction.begin();
 	    if (tx == null) {
-		throw new ConflictException(); // Should never happen!
+		TransactionSignaller.SIGNALLER.signalCommitFail(); // Should never happen!
 	    }
 	    try {
 		updateTablesNotNested();
-		tx.commitTx();
-		assert (epfl.Debug.print(3, Thread.currentThread().getId() + "] Finished operation: " + this));
+		tx.commit();
 		return;
-	    } catch (ConflictException ae) {
+	    } catch (CommitException ae) {
 
 	    }
 	}

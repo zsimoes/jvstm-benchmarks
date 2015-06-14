@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/nmld/wttm-tests/wttm-tests/jvstm.jar" sourcepath="/home/nmld/wttm-tests/wttm-tests/jvstm-sota-relaxed-inplace"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>

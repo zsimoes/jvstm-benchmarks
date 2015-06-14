@@ -1,6 +1,7 @@
 package stamp.vacation.pnstm.treemap;
 
-import epfl.ConflictException;
+import jvstm.TransactionSignaller;
+
 
 /* =============================================================================
  *
@@ -134,7 +135,7 @@ public class Customer {
 
 	boolean status = reservationInfoList.remove(reservationInfo);
 	if (!status) {
-	    throw new ConflictException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 	return true;
     }

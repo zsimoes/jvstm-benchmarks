@@ -1,6 +1,6 @@
 package stamp.vacation.jvstm.treemap;
 
-import jvstm.CommitException;
+import jvstm.TransactionSignaller;
 import jvstm.VBoxInt;
 
 /* =============================================================================
@@ -94,31 +94,31 @@ public class Reservation implements Comparable<Reservation> {
     public void checkReservation() {
 	int numUsed = this.numUsed.get();
 	if (numUsed < 0) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - checkReservation numUsed < 0" + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - checkReservation numUsed < 0" + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	int numFree = this.numFree.get();
 	if (numFree < 0) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - checkReservation numFree < 0" + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - checkReservation numFree < 0" + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	int numTotal = this.numTotal.get();
 	if (numTotal < 0) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - checkReservation numTotal < 0" + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - checkReservation numTotal < 0" + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	if ((numUsed + numFree) != numTotal) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - checkReservation does not match" + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - checkReservation does not match" + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	int price = this.price.get();
 	if (price < 0) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - checkReservation price < 0 " + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - checkReservation price < 0 " + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
     }
 

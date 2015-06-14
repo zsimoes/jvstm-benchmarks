@@ -242,7 +242,7 @@ public class Vacation {
 
 	// System.out.print("done.");
 	long diff = stop - start;
-	System.out.print(diff + "\n" + stanford.Transaction.getReport());
+	System.out.print(diff + "\n" /*+ stanford.Transaction.getReport()*/);
 	vac.checkTables(manager);
 
 	/* Clean up */

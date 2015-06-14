@@ -6,12 +6,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 
-import stanford.AbortException;
-import stanford.NestedWorker;
-import stanford.Transaction;
+import jvstm.CommitException;
+import jvstm.ParallelTask;
+import jvstm.Transaction;
+import jvstm.TransactionSignaller;
+import jvstm.TransactionalTask;
 
 public class UpdateTablesOperation extends Operation {
 
@@ -62,11 +63,11 @@ public class UpdateTablesOperation extends Operation {
 
 	    Transaction tx = Transaction.begin();
 	    if (tx == null) {
-		throw new AbortException(); // Should never happen!
+		TransactionSignaller.SIGNALLER.signalCommitFail(); // Should never happen!
 	    }
 	    try {
 		if (Operation.fakeDepth > 0) {
-		    List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		    List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		    callables.add(new Nested(1));
 		    tx.manageNestedParallelTxs(callables, threadPool).get(0);
 		} else {
@@ -76,16 +77,16 @@ public class UpdateTablesOperation extends Operation {
 			    updateTablesNotNested();
 			}
 		}
-		tx.commitTx();
-		assert (stanford.Debug.print(3, Thread.currentThread().getId() + "] Finished operation: " + this));
+		tx.commit();
+		
 		return;
-	    } catch (AbortException ae) {
+	    } catch (CommitException ae) {
 
 	    }
 	}
     }
 
-   public class Nested extends NestedWorker<Void> {
+   public class Nested extends ParallelTask<Void> {
 
 	protected int depth;
 	
@@ -103,7 +104,7 @@ public class UpdateTablesOperation extends Operation {
 		}
 		return null;
 	    } else {
-		List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		callables.add(new Nested(depth + 1));
 		Transaction.current().manageNestedParallelTxs(callables, threadPool).get(0);
 		return null;
@@ -112,7 +113,7 @@ public class UpdateTablesOperation extends Operation {
 	
     }
 
-    private class NestedWork extends NestedWorker<Void> {
+    private class NestedWork extends ParallelTask<Void> {
 
 	private final List<Integer> operations;
 

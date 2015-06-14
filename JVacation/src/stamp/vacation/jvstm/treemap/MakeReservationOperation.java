@@ -6,12 +6,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 
 import jvstm.CommitException;
+import jvstm.ParallelTask;
 import jvstm.Transaction;
-import jvstm.util.NestedWorkUnit;
+import jvstm.TransactionalTask;
 
 public class MakeReservationOperation extends Operation {
 
@@ -70,7 +70,7 @@ public class MakeReservationOperation extends Operation {
 	    // Thread.currentThread().getId() + " " + tx);
 	    try {
 		if (Operation.fakeDepth > 0) {
-		    List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		    List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		    callables.add(new Nested(1));
 		    tx.manageNestedParallelTxs(callables, threadPool).get(0);
 		} else {
@@ -98,7 +98,7 @@ public class MakeReservationOperation extends Operation {
 	}
     }
 
-    public class Nested extends NestedWorkUnit<Void> {
+    public class Nested extends ParallelTask<Void> {
 
 	protected int depth;
 	
@@ -116,7 +116,7 @@ public class MakeReservationOperation extends Operation {
 		}
 		return null;
 	    } else {
-		List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		callables.add(new Nested(depth + 1));
 		Transaction.current().manageNestedParallelTxs(callables, threadPool).get(0);
 		return null;
@@ -125,7 +125,7 @@ public class MakeReservationOperation extends Operation {
 	
     }
 
-    private class NestedWorker extends NestedWorkUnit<Boolean> {
+    private class NestedWorker extends ParallelTask<Boolean> {
 
 	private final int min;
 	private final int max;

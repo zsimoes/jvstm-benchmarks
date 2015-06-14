@@ -2,16 +2,15 @@ package stamp.vacation.pnstm.treemap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 
-import epfl.ConflictException;
-import epfl.Transaction;
-import epfl.NestedWorker;
+import jvstm.CommitException;
+import jvstm.ParallelTask;
+import jvstm.Transaction;
+import jvstm.TransactionSignaller;
+import jvstm.TransactionalTask;
 
 public class DeleteCustomerOperation extends Operation {
 
@@ -39,11 +38,11 @@ public class DeleteCustomerOperation extends Operation {
 
 	    Transaction tx = Transaction.begin();
 	    if (tx == null) {
-		throw new ConflictException(); // Should never happen!
+		TransactionSignaller.SIGNALLER.signalCommitFail(); // Should never happen!
 	    }
 	    try {
 		if (Operation.fakeDepth > 0) {
-		    List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		    List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		    callables.add(new Nested(1));
 		    tx.manageNestedParallelTxs(callables, threadPool).get(0);
 		} else {
@@ -52,16 +51,15 @@ public class DeleteCustomerOperation extends Operation {
 			    managerPtr.manager_deleteCustomer(customerId);
 			}
 		}
-		tx.commitTx();
-		assert (epfl.Debug.print(3, Thread.currentThread().getId() + "] Finished operation: " + this));
+		tx.commit();
 		return;
-	    } catch (ConflictException ae) {
+	    } catch (CommitException ae) {
 
 	    }
 	}
     }
 
-    public class Nested extends NestedWorker<Void> {
+    public class Nested extends ParallelTask<Void> {
 
 	protected int depth;
 	
@@ -78,7 +76,7 @@ public class DeleteCustomerOperation extends Operation {
 		}
 		return null;
 	    } else {
-		List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+		List<TransactionalTask<Void>> callables = new ArrayList<TransactionalTask<Void>>();
 		callables.add(new Nested(depth + 1));
 		Transaction.current().manageNestedParallelTxs(callables, threadPool).get(0);
 		return null;

@@ -1,7 +1,7 @@
 package stamp.vacation.nestm.nonest.treemap;
 
-import stanford.AbortException;
-import stanford.Box;
+import jvstm.TransactionSignaller;
+import jvstm.VBox;
 
 /* =============================================================================
  *
@@ -75,45 +75,45 @@ import stanford.Box;
  */
 
 public class Reservation implements Comparable<Reservation> {
-    // VBoxes on these
-    final Box<Integer> id;
-    final Box<Integer> numUsed;
-    final Box<Integer> numFree;
-    final Box<Integer> numTotal;
-    final Box<Integer> price;
+    // VVBoxes on these
+    final VBox<Integer> id;
+    final VBox<Integer> numUsed;
+    final VBox<Integer> numFree;
+    final VBox<Integer> numTotal;
+    final VBox<Integer> price;
 
     public Reservation(int id, int numTotal, int price) {
-	this.id = new Box<Integer>(id);
-	this.numUsed = new Box<Integer>(0);
-	this.numFree = new Box<Integer>(numTotal);
-	this.numTotal = new Box<Integer>(numTotal);
-	this.price = new Box<Integer>(price);
+	this.id = new VBox<Integer>(id);
+	this.numUsed = new VBox<Integer>(0);
+	this.numFree = new VBox<Integer>(numTotal);
+	this.numTotal = new VBox<Integer>(numTotal);
+	this.price = new VBox<Integer>(price);
 	checkReservation();
     }
 
     public void checkReservation() {
 	int numUsed = this.numUsed.get();
 	if (numUsed < 0) {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	int numFree = this.numFree.get();
 	if (numFree < 0) {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	int numTotal = this.numTotal.get();
 	if (numTotal < 0) {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	if ((numUsed + numFree) != numTotal) {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	int price = this.price.get();
 	if (price < 0) {
-	    throw new AbortException();
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
     }
 

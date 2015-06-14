@@ -1,6 +1,6 @@
 package stamp.vacation.jvstm.treemap;
 
-import jvstm.CommitException;
+import jvstm.TransactionSignaller;
 
 /* =============================================================================
  *
@@ -109,8 +109,8 @@ public class Manager {
 	    if (reservation.numTotal.get() == 0) {
 		boolean status = table.remove(id) != null ? true : false;
 		if (!status) {
-		    jvstm.util.Debug.print("COMMIT EXCEPTION - addReservation " + Thread.currentThread().getId());
-		    throw new CommitException();
+		    System.err.println("COMMIT EXCEPTION - addReservation " + Thread.currentThread().getId());
+		    TransactionSignaller.SIGNALLER.signalCommitFail();
 		}
 	    } else {
 		reservation.reservation_updatePrice(price);
@@ -223,8 +223,8 @@ public class Manager {
 	if (oldCustomer == null) {
 	    customerTable.put(customerId, customer);
 	} else {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - addCustomer " + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - addCustomer " + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	return true;
@@ -259,21 +259,21 @@ public class Manager {
 	for (Reservation_Info reservationInfo : reservationInfoList) {
 	    Reservation reservation = reservationTables[reservationInfo.type].get(reservationInfo.id);
 	    if (reservation == null) {
-		jvstm.util.Debug.print("COMMIT EXCEPTION - deleteCustomer reservation is null " + Thread.currentThread().getId());
-		throw new CommitException();
+		System.err.println("COMMIT EXCEPTION - deleteCustomer reservation is null " + Thread.currentThread().getId());
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	    status = reservation.reservation_cancel();
 	    if (!status) {
-		jvstm.util.Debug.print("COMMIT EXCEPTION - deleteCustomer failed to cancel customer Id" + customerId + " res_info: " + reservationInfo.id + " "
+		System.err.println("COMMIT EXCEPTION - deleteCustomer failed to cancel customer Id" + customerId + " res_info: " + reservationInfo.id + " "
 			+ reservationInfo.type + " " + reservationInfo.price + " " + Thread.currentThread().getId());
-		throw new CommitException();
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	}
 
 	status = customerTable.remove(customerId) != null ? true : false;
 	if (!status) {
-	    jvstm.util.Debug.print("COMMIT EXCEPTION - deleteCustomer failed to remove " + Thread.currentThread().getId());
-	    throw new CommitException();
+	    System.err.println("COMMIT EXCEPTION - deleteCustomer failed to remove " + Thread.currentThread().getId());
+	    TransactionSignaller.SIGNALLER.signalCommitFail();
 	}
 
 	return true;
@@ -442,8 +442,8 @@ public class Manager {
 	    /* Undo previous successful reservation */
 	    boolean status = reservation.reservation_cancel();
 	    if (!status) {
-		jvstm.util.Debug.print("COMMIT EXCEPTION - reserve " + Thread.currentThread().getId());
-		throw new CommitException();
+		System.err.println("COMMIT EXCEPTION - reserve " + Thread.currentThread().getId());
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	    return false;
 	}
@@ -513,8 +513,8 @@ public class Manager {
 	    /* Undo previous successful cancellation */
 	    boolean status = reservation.reservation_make();
 	    if (!status) {
-		jvstm.util.Debug.print("COMMIT EXCEPTION - cancel " + Thread.currentThread().getId());
-		throw new CommitException();
+		System.err.println("COMMIT EXCEPTION - cancel " + Thread.currentThread().getId());
+		TransactionSignaller.SIGNALLER.signalCommitFail();
 	    }
 	    return false;
 	}
