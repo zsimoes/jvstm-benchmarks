@@ -254,6 +254,8 @@ public class Vacation
 		Client clients[];
 		long start;
 		long stop;
+		
+		jvstm.tuning.Controller.setEnabled(false);
 
 		/* Initialization */
 		Vacation vac = new Vacation();
@@ -266,6 +268,8 @@ public class Vacation
 		 //System.out.println("Running clients: " + vac.CLIENTS);
 
 		// Barrier.setBarrier(numThread);
+		
+		jvstm.tuning.Controller.setEnabled(true);
 
 		start = System.currentTimeMillis();
 		for (int i = 1; i < numThread; i++)
@@ -282,6 +286,7 @@ public class Vacation
 
 		long diff = stop - start;
 		System.out.print(diff + " ");
+		//System.out.println(jvstm.tuning.Controller.instance().getPolicy().getGlobalStatistics().getAbortCount() + " ");
 		vac.checkTables(manager);
 
 		/* Clean up */

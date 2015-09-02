@@ -1,5 +1,6 @@
 package stmbench7.core;
 
+import stmbench7.OperationId;
 import stmbench7.annotations.Immutable;
 import stmbench7.annotations.ThreadLocal;
 
@@ -12,6 +13,16 @@ import stmbench7.annotations.ThreadLocal;
 @ThreadLocal
 public class OperationFailedException extends Exception {
 
+	OperationId source;
+	
+	public void setSource(OperationId opId) {
+		this.source = opId;
+	}
+	
+	public OperationId getSource() {
+		return source;
+	}
+	
 	private static final long serialVersionUID = -4829600105999291994L;
 
 	public OperationFailedException(String message, Object reportingObject) {
@@ -21,11 +32,29 @@ public class OperationFailedException extends Exception {
 	public OperationFailedException(String message) {
 		super(message);
 	}
+	
+	public OperationFailedException(String message, OperationId source) {
+		super(message);
+		this.source = source;
+	}
 
 	public OperationFailedException(String message, Throwable cause) {
 		super(message, cause);
 	}
+	
+	
+	public OperationFailedException(String message, Throwable cause, OperationId source) {
+		super(message, cause);
+		this.source = source;
+	}
+
+	
+	public OperationFailedException(OperationId source) {
+		super();
+		this.source = source;
+	}
 
 	public OperationFailedException() {
+		super();
 	}
 }

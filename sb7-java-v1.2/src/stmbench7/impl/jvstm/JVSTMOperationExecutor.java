@@ -131,7 +131,10 @@ public class JVSTMOperationExecutor implements OperationExecutor
 						}
 					} else
 					{
+						long startTime = System.currentTimeMillis();
 						result = op.performOperation();
+						startTime = System.currentTimeMillis() - startTime;
+						System.out.println("Round Run time: " + startTime);
 					}
 					return result;
 				} catch (jvstm.CommitException ce)

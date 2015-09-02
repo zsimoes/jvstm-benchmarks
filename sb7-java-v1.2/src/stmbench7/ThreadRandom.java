@@ -98,8 +98,8 @@ public class ThreadRandom {
 	
 	public static void startSequentialReplayPhase() {
 		phase = Phase.SEQUENTIAL_REPLAY;
-		virtualRandom = new RandomState[Parameters.numThreads];
-		for(int n = 0; n < Parameters.numThreads; n++)
+		virtualRandom = new RandomState[Parameters.numTopLevel];
+		for(int n = 0; n < Parameters.numTopLevel; n++)
 			virtualRandom[n] = new RandomState();
 	}
 
