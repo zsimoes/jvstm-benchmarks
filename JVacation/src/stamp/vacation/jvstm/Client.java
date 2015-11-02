@@ -12,6 +12,7 @@ public class Client extends Thread
 	final int numQueryPerTransaction;
 	final int queryRange;
 	final int percentUser;
+	final Operation[] operations;
 
 	/*
 	 * ==========================================================================
@@ -32,6 +33,31 @@ public class Client extends Thread
 		this.queryRange = queryRange;
 		this.percentUser = percentUser;
 		this.setName("Vacation Client");
+
+		operations = new Operation[numOperation];
+
+		// System.out.println("\tClient " + this.id + " - running operations: "
+		// + numOperation);
+
+		for (int i = 0; i < numOperation; i++)
+		{
+			int r = randomPtr.posrandom_generate() % 100;
+			int action = selectAction(r, percentUser);
+
+			if (action == Definitions.ACTION_MAKE_RESERVATION)
+			{
+				operations[i] = new MakeReservationOperation(managerPtr, randomPtr, numQueryPerTransaction, queryRange);
+			} else if (action == Definitions.ACTION_DELETE_CUSTOMER)
+			{
+				operations[i] = new DeleteCustomerOperation(managerPtr, randomPtr, queryRange);
+			} else if (action == Definitions.ACTION_UPDATE_TABLES)
+			{
+				operations[i] = new UpdateTablesOperation(managerPtr, randomPtr, numQueryPerTransaction, queryRange);
+			} else
+			{
+				assert (false);
+			}
+		}
 	}
 
 	/*
@@ -63,30 +89,6 @@ public class Client extends Thread
 	@Override
 	public void run()
 	{
-		Operation[] operations = new Operation[numOperation];
-		
-		//System.out.println("\tClient " + this.id + " - running operations: " + numOperation);
-
-		for (int i = 0; i < numOperation; i++)
-		{
-			int r = randomPtr.posrandom_generate() % 100;
-			int action = selectAction(r, percentUser);
-
-			if (action == Definitions.ACTION_MAKE_RESERVATION)
-			{
-				operations[i] = new MakeReservationOperation(managerPtr, randomPtr, numQueryPerTransaction, queryRange);
-			} else if (action == Definitions.ACTION_DELETE_CUSTOMER)
-			{
-				operations[i] = new DeleteCustomerOperation(managerPtr, randomPtr, queryRange);
-			} else if (action == Definitions.ACTION_UPDATE_TABLES)
-			{
-				operations[i] = new UpdateTablesOperation(managerPtr, randomPtr, numQueryPerTransaction, queryRange);
-			} else
-			{
-				assert (false);
-			}
-		}
-
 		for (int i = 0; i < numOperation; i++)
 		{
 			operations[i].doOperation();
