@@ -255,8 +255,7 @@ public class Vacation
 		long start;
 		long stop;
 		
-		jvstm.tuning.Controller.setEnabled(false);
-		System.err.println("Controller disabled by vacation.");
+		jvstm.tuning.Controller.setEnabled(false, "Vacation");
 
 		/* Initialization */
 		Vacation vac = new Vacation();
@@ -270,8 +269,7 @@ public class Vacation
 
 		// Barrier.setBarrier(numThread);
 		
-		jvstm.tuning.Controller.setEnabled(true);
-		System.err.println("Controller enabled by vacation.");
+		jvstm.tuning.Controller.setEnabled(true, "Vacation");
 
 		start = System.currentTimeMillis();
 		for (int i = 1; i < numThread; i++)
@@ -288,7 +286,7 @@ public class Vacation
 
 		long diff = stop - start;
 		System.out.print(diff + " ");
-		//System.out.println(jvstm.tuning.Controller.instance().getPolicy().getGlobalStatistics().getAbortCount() + " ");
+		jvstm.tuning.Controller.instance().getStatisticsCollector().setExecutionTime(diff);
 		vac.checkTables(manager);
 
 		/* Clean up */
