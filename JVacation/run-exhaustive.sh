@@ -54,9 +54,9 @@ fi
 
 runjava="java -Xms16384m -Xmx32768m -cp $jvstmlib:."
 
-parameters[1]="-n 2000000 -q 1 -u 98 -r 10485 -t 48"
+parameters[1]="-n 2000000 -q 1 -u 98 -r 10485 -t 80"
 file[1]="${resultFolder}/high-contention.exhaustive"
-parameters[2]="-n 2000000 -q 98 -u 98 -r 10485 -t 48"
+parameters[2]="-n 2000000 -q 98 -u 98 -r 10485 -t 80"
 file[2]="${resultFolder}/low-contention.exhaustive"
 
 nestBool=true
@@ -64,7 +64,7 @@ updatePar=true
 
 printedFirstRun=0
 
-attemps=5
+attempts=3
 
 date1=$(date +"%s")
 for p in 1 2
@@ -89,15 +89,14 @@ do
 					then
 						continue
 					fi
-					echo "(avg) java... -Doutput=${file[$p]} Vacation -c $t ${parameters[$p]} -nest $nestBool -sib $n -updatePar $updatePar"
 					sum=0
 					for a in $(seq 1 $attempts)
 					do
 						if ((printedFirstRun == 0)); then
-							echo "$runjava -DmaxThreads=$((t * n)) -DInitialConfig=$t,$n -Dpolicy=none -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $t ${parameters[$p]} -nest $nestBool -sib $n -updatePar $updatePar"
+							echo "$runjava -DMaxThreads=$((t * n)) -DNoStats=true -DInitialConfig=$t,$n -DPolicy=Default -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $t ${parameters[$p]} -nest $nestBool -sib $n -updatePar $updatePar"
 							printedFirstRun=1
 						fi
-						let sum+=`$runjava -DmaxThreads=$((t * n)) -DInitialConfig=$t,$n -Dpolicy=none -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $t ${parameters[$p]} -nest $nestBool -sib $n -updatePar $updatePar`
+						let sum+=`$runjava -DMaxThreads=$((t * n)) -DNoStats=true -DInitialConfig=$t,$n -DPolicy=Default -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $t ${parameters[$p]} -nest $nestBool -sib $n -updatePar $updatePar`
 					done #attempts
 					#average results from each attempt and save to file with coordinates
 					echo "Coords: [$t,$n]  Avg: $((sum/attempts))"

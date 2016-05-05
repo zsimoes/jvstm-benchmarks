@@ -53,6 +53,9 @@ for policy in ${policies[@]}; do
 	#for contention_key in "${!contention[@]}"; do 
 	#	contention_value="${contention["$contention_key"]}"
 	# do only high contention for now:
+	if ["$policy" == "Default"]; then
+		continue;
+	fi
 	contention_key="high_contention"
 	contention_value=${contention["$contention_key"]}
 			# do only [6;6] for now

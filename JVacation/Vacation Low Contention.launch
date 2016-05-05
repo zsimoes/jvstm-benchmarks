@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/JVacation/src/stamp/vacation/jvstm/Vacation.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="stamp.vacation.jvstm.Vacation"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-c 4 -nest true -sib 2 -updatePar true -n 2000000 -q 98 -u 98 -r 10485 -t 128"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="JVacation"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms1G -Xmx4G -DNoStats=false -DMaxThreads=48 -DInitialConfig=6,8 -DPolicy=F2C2 -DMeasurementType=real -DInterval=50 -DContention=Low"/>
+</launchConfiguration>

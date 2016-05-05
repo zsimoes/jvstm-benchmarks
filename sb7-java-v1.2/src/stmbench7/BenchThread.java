@@ -274,7 +274,7 @@ public class BenchThread implements Runnable
 
 	protected void createOperationsNested(Setup setup)
 	{
-		nestedExecutors = new HashMap<>();
+		nestedExecutors = new HashMap<Integer, OperationExecutor>();
 
 		int numOfOperations = OperationId.values().length;
 		int nesting = Parameters.numNested;

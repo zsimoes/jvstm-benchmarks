@@ -42,12 +42,12 @@ cd $wd/src
 #	exit
 #fi
 
-runjava="java -Xms1024m -Xmx1800m -cp $jvstmlib:."
+runjava="java -Xms4096m -Xmx8192m -cp $jvstmlib:."
 
-attempts=2
+attempts=3
 
 date1=$(date +"%s")
-for contention_key in "${!contention[@]}"; do 
+for contention_key in "${!contention[@]}"; 
 do
 	contention_value="${contention["$contention_key"]}"
 	echo "Contention Type: ${contention_key}"
@@ -55,8 +55,8 @@ do
 	for policy in ${policies[@]}
 	do
 		echo -e "\tPolicy: ${policy}"
-		file="${resultFolder}/execution-${policy}-${contention_value}.log";
-		> file;
+		file="${resultFolder}/execution-${policy}-${contention_key}.log";
+		> "$file";
 		
         for c in $(seq 1 ${#configs[@]})
         do
@@ -71,13 +71,14 @@ do
 			do
 				if [ "$configString" == "1;1" ] 
 				then
-					let sum+=`$runjava -DMaxThreads=${max_cores} -DInitialConfig=$top,$nest -DContention=$contention_key -DPolicy=$policy -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $top ${contentionTypes[$cont]} -nest false -sib $nest -updatePar false`
+					echo "$runjava -DMaxThreads=${max_cores} -DInitialConfig=$top,$nest -DContention=$contention_key -DPolicy=$policy -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $top ${contention_value} -nest false -sib $nest -updatePar false"
+					let sum+=`$runjava -DMaxThreads=${max_cores} -DInitialConfig=$top,$nest -DContention=$contention_key -DPolicy=$policy -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $top ${contention_value} -nest false -sib $nest -updatePar false`
 				else
-					let sum+=`$runjava -DMaxThreads=${max_cores} -DInitialConfig=$top,$nest -DContention=$contention_key -DPolicy=$policy -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $top ${contentionTypes[$cont]} -nest true -sib $nest -updatePar true`
+					let sum+=`$runjava -DMaxThreads=${max_cores} -DInitialConfig=$top,$nest -DContention=$contention_key -DPolicy=$policy -DMeasurementType=real -DInterval=100 -DLogFile=/dev/null $vacNormal/Vacation -c $top ${contention_value} -nest true -sib $nest -updatePar true`
 				fi
 			done
 			result=$((sum / attempts))
-			printf " ${top}x${nest} $result\n" >> $file
+			printf " ${top}x${nest} $result\n" >> "$file"
         done #configs
 		
 	done #policies

@@ -21,9 +21,9 @@ then
 	policy=$2
 	paramTop=$3
 	paramNested=$4
-	declare -A config
-	config[high_contention]="-n 2000000 -q 1 -u 98 -r 10485 -t 48"
-	config[low_contention]="-n 2000000 -q 98 -u 98 -r 10485 -t 48"
+	declare -A contention
+	contention[high_contention]="-n 2000000 -q 1 -u 98 -r 10485 -t 80"
+	contention[low_contention]="-n 2000000 -q 98 -u 98 -r 10485 -t 80"
 else
 	echo "Using config file."
 	echo
@@ -31,8 +31,8 @@ fi
 
 echo "JVSTM: $jvstm"
 echo "Policy: $policy "
-for config_key in "${!config[@]}"; do 
-	echo "$config_key: ${config["$config_key"]}"; 
+for contention_key in "${!contention[@]}"; do 
+	echo "$contention_key: ${contention["$contention_key"]}"; 
 done
 
 echo "Top-levels: $paramTop"
@@ -78,17 +78,17 @@ file="${resultFolder}/overhead.data"
 echo "Type Default Stats Tuning Tuning+Stats" > $file
 
 date1=$(date +"%s")
-attempts=10
-for config_key in "${!config[@]}"; do 
-	config_value="${config["$config_key"]}"
-	echo "Running config: $config_key - $config_value"; 
+attempts=3
+for contention_key in "${!contention[@]}"; do 
+	contention_value="${contention["$contention_key"]}"
+	echo "Running contention: $contention_key - $contention_value"; 
 	echo
 	
 	echo "Running default JVSTM"; 
 	sum=0
 	for a in $(seq 1 $attempts)
 	do
-			let sum+=`$runjava -DPolicy=Default -DInterval=100 -DNoStats=true -DMaxThreads=$((paramTop * paramNested)) -DContention=$config_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $config_value -nest true -sib $paramNested -updatePar true`
+			let sum+=`$runjava -DPolicy=Default -DInterval=100 -DNoStats=true -DMaxThreads=$((paramTop * paramNested)) -DContention=$contention_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $contention_value -nest true -sib $paramNested -updatePar true`
 	done
 	sum=$((sum/attempts))
 
@@ -96,7 +96,7 @@ for config_key in "${!config[@]}"; do
 	sum2=0
 	for a in $(seq 1 $attempts)
 	do
-			let sum2+=`$runjava -DPolicy=Default -DInterval=100 -DNoStats=false -DLogFile=/dev/null -DMeasurementType=real  -DMaxThreads=$((paramTop * paramNested)) -DContention=$config_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $config_value -nest true -sib $paramNested -updatePar true`
+			let sum2+=`$runjava -DPolicy=Default -DInterval=100 -DNoStats=false -DLogFile=/dev/null -DMeasurementType=real  -DMaxThreads=$((paramTop * paramNested)) -DContention=$contention_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $contention_value -nest true -sib $paramNested -updatePar true`
 	done
 	sum2=$((sum2/attempts))
 	
@@ -104,7 +104,7 @@ for config_key in "${!config[@]}"; do
 	sum3=0
 	for a in $(seq 1 $attempts)
 	do
-			let sum3+=`$runjava -DPolicy=FakeLinearGD -DInterval=100 -DNoStats=true -DMaxThreads=$((paramTop * paramNested)) -DContention=$config_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $config_value -nest true -sib $paramNested -updatePar true`
+			let sum3+=`$runjava -DPolicy=FakeLinearGD -DInterval=100 -DNoStats=true -DMaxThreads=$((paramTop * paramNested)) -DContention=$contention_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $contention_value -nest true -sib $paramNested -updatePar true`
 	done
 	sum3=$((sum3/attempts))
 	
@@ -112,11 +112,11 @@ for config_key in "${!config[@]}"; do
 	sum4=0
 	for a in $(seq 1 $attempts)
 	do
-			let sum4+=`$runjava -DPolicy=FakeLinearGD -DInterval=100 -DNoStats=false -DLogFile=/dev/null -DMeasurementType=real  -DMaxThreads=$((paramTop * paramNested)) -DContention=$config_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $config_value -nest true -sib $paramNested -updatePar true`
+			let sum4+=`$runjava -DPolicy=FakeLinearGD -DInterval=100 -DNoStats=false -DLogFile=/dev/null -DMeasurementType=real  -DMaxThreads=$((paramTop * paramNested)) -DContention=$contention_key -DInitialConfig=$paramTop,$paramNested $vacNormal/Vacation -c $paramTop $contention_value -nest true -sib $paramNested -updatePar true`
 	done
 	sum4=$((sum4/attempts))
 	
-	echo "$config_key $sum $sum2 $sum3 $sum4" >> $file
+	echo "$contention_key $sum $sum2 $sum3 $sum4" >> $file
 done
 date2=$(date +"%s")
 diff=$(($date2-$date1))
