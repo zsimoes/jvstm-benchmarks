@@ -7,7 +7,7 @@ This repository contains the benchmarks used to evaluate JVSTM's tuning system, 
 * Vacation (part of the STAMP suite - <https://github.com/chrisseaton/stamp> and <http://csl.stanford.edu/~christos/publications/2008.stamp.iiswc.pdf>)
 * STMBench7 (<http://www.eurotm.org/tmbenchmarks> and <https://infoscience.epfl.ch/record/101108>)
 
-For configurations and parameters refer to the original benchmark's documentation - to make them compatible with JVSTM and tuning, some negligible changes were made in the benchmarks' code, but they do not affect the general behaviour or command-line options. Additional parameter information can be found on the JVSTM+tuning project's run configurations (<https://github.com/zsimoes/jvstm>).
+For configurations and parameters refer to the original benchmark's documentation - to make them compatible with JVSTM and tuning, some negligible changes were made in the benchmarks' code, but they do not affect the general behaviour or command-line options. The latest tests were run on a Linux machine with Java 6u45. Test scripts (.sh files) can be found in each benchmark's folder, for a variety of scenarios: Execution time comparison, convergence tests, overhead tests, and exhaustive search space mapping. Together, these scripts form a complete test run, and can be modified to tweak the run configurations.
 
 ## Data processors
 
